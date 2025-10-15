@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sebuah Pesan Untuk Dilla</title>
+    <style>
+        :root {
+            --envelope-color: #f08080; /* Light Coral */
+            --flap-color: #cd5c5c; /* Indian Red */
+            --letter-color: #fff0f5; /* Lavender Blush */
+            --text-color: #e91e63;
+            --heart-color: #e91e63;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --bg-color: #fce4ec;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .envelope-wrapper:hover {
+            transform: translateY(-10px);
+        }
+
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background-color: var(--envelope-color);
+            border-radius: 10px;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Front part of the envelope created with pseudo-elements */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, transparent 49.8%, var(--flap-color) 50%) 0 0 / 50.1% 100% no-repeat,
+                        linear-gradient(to bottom left, transparent 49.8%, var(--flap-color) 50%) 100% 0 / 50.1% 100% no-repeat;
+        }
+
+        .letter {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            background-color: var(--letter-color);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transform: translateY(80px); /* Initially hidden inside */
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+                        opacity 0.5s ease-out 0.5s;
+            z-index: 1;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .letter h1 {
+            color: var(--text-color);
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 2px 2px 4px var(--shadow-color);
+        }
+
+        .letter p {
+            color: #880e4f;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px; /* Half the height of the envelope */
+            background-color: var(--flap-color);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 3;
+        }
+
+        /* --- Open State --- */
+        .envelope-wrapper.open .flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-wrapper.open .letter {
+            transform: translateY(-20px);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* --- Love Animation --- */
+        .love {
+            position: fixed; /* Fixed to float over everything */
+            background-color: var(--heart-color);
+            transform: rotate(-45deg);
+            animation: float 5s infinite linear;
+            opacity: 0;
+            z-index: 10;
+        }
+        .love:before,
+        .love:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--heart-color);
+            border-radius: 50%;
+        }
+        .love:before { top: -50%; left: 0; }
+        .love:after { top: 0; left: 50%; }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(-45deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(-45deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="envelope-wrapper" id="envelope">
+        <div class="envelope">
+            <div class="letter">
+                <h1>Dilla Cantik Bangeeet!</h1>
+                <p>Aku suka Dilaaaa❤️❤️❤️</p>
+            </div>
+            <div class="flap"></div>
+        </div>
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        let heartsStarted = false;
+
+        envelope.addEventListener('click', () => {
+            // Toggle the 'open' class on the wrapper
+            envelope.classList.toggle('open');
+            
+            // Start creating hearts only once
+            if (!heartsStarted && envelope.classList.contains('open')) {
+                heartsStarted = true;
+                setInterval(createHeart, 300);
+            }
+        });
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('love');
+            
+            const size = Math.random() * 20 + 10; // Random size between 10px and 30px
+            heart.style.width = size + 'px';
+            heart.style.height = size + 'px';
+            
+            heart.style.left = Math.random() * 100 + 'vw'; // Random horizontal position
+            
+            const duration = Math.random() * 3 + 4; // Random duration between 4s and 7s
+            heart.style.animationDuration = duration + 's';
+            
+            heart.style.animationDelay = Math.random() * 2 + 's'; // Random delay up to 2s
+            
+            document.body.appendChild(heart);
+
+            // Remove the heart from the DOM after its animation ends to save memory
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+            });
+        }
+    </script>
+
+</body>
+</html>
